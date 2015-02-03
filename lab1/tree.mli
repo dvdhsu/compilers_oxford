@@ -23,6 +23,7 @@ and stmt =
   | Newline
   | IfStmt of expr * stmt * stmt
   | WhileStmt of expr * stmt
+  | RepeatStmt of stmt * expr
 
 and expr = 
     Number of int 

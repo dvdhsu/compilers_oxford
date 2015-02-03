@@ -57,6 +57,10 @@ let rec gen_stmt =
         let lab1 = label () and lab2 = label () and lab3 = label () in
         SEQ [LABEL lab1; gen_cond lab2 lab3 test;
           LABEL lab2; gen_stmt body; JUMP lab1; LABEL lab3]
+    | RepeatStmt (body, test) ->
+        let lab1 = label () and lab2 = label () and lab3 = label () in
+        SEQ [LABEL lab1; gen_stmt body; JUMP lab2; LABEL lab2;
+             gen_cond lab3 lab1 test; LABEL lab3]
 
 (* |translate| -- generate code for the whole program *)
 let translate (Program ss) =

@@ -12,7 +12,7 @@ open Tree
 /* punctuation and keywords */
 %token                  SEMI DOT COLON LPAR RPAR COMMA MINUS VBAR
 %token                  ASSIGN EOF BADTOK
-%token                  BEGIN DO ELSE END IF THEN WHILE PRINT NEWLINE
+%token                  BEGIN DO ELSE END IF THEN WHILE PRINT NEWLINE REPEAT UNTIL
 
 %type <Tree.program>    program
 
@@ -38,6 +38,7 @@ stmt :
   | IF expr THEN stmts END              { IfStmt ($2, $4, Skip) }
   | IF expr THEN stmts ELSE stmts END   { IfStmt ($2, $4, $6) }
   | WHILE expr DO stmts END             { WhileStmt ($2, $4) } ;
+  | REPEAT stmts UNTIL expr             { RepeatStmt($2, $4) } ;
  
 expr :
     simple                              { $1 }
