@@ -12,7 +12,7 @@ open Tree
 /* punctuation and keywords */
 %token                  SEMI DOT COLON LPAR RPAR COMMA MINUS VBAR
 %token                  ASSIGN EOF BADTOK
-%token                  BEGIN DO ELSE END IF THEN WHILE PRINT NEWLINE REPEAT UNTIL
+%token                  BEGIN DO ELSE END IF THEN WHILE PRINT NEWLINE REPEAT UNTIL EXIT LOOP
 
 %type <Tree.program>    program
 
@@ -32,6 +32,7 @@ stmt_list :
 
 stmt :  
     /* empty */                         { Skip }
+  | EXIT                                { Exit }
   | name ASSIGN expr                    { Assign ($1, $3) }
   | PRINT expr                          { Print $2 }
   | NEWLINE                             { Newline }
@@ -39,6 +40,7 @@ stmt :
   | IF expr THEN stmts ELSE stmts END   { IfStmt ($2, $4, $6) }
   | WHILE expr DO stmts END             { WhileStmt ($2, $4) } ;
   | REPEAT stmts UNTIL expr             { RepeatStmt($2, $4) } ;
+  | LOOP stmts END                      { LoopStmt ($2) } ;
  
 expr :
     simple                              { $1 }

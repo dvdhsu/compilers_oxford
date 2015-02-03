@@ -16,6 +16,7 @@ type program = Program of stmt
 
 and stmt = 
     Skip 
+  | Exit
   | Seq of stmt list
   | Assign of name * expr
   | Print of expr
@@ -23,6 +24,7 @@ and stmt =
   | IfStmt of expr * stmt * stmt
   | WhileStmt of expr * stmt
   | RepeatStmt of stmt * expr
+  | LoopStmt of stmt
 
 and expr = 
     Number of int 
