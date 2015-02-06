@@ -12,7 +12,7 @@ open Tree
 /* punctuation and keywords */
 %token                  SEMI DOT COLON LPAR RPAR COMMA MINUS VBAR
 %token                  ASSIGN EOF BADTOK
-%token                  BEGIN DO ELSE END IF THEN WHILE PRINT NEWLINE REPEAT UNTIL EXIT LOOP
+%token                  BEGIN DO ELSE END IF THEN WHILE PRINT NEWLINE REPEAT UNTIL EXIT LOOP CASE OF
 
 %type <Tree.program>    program
 
@@ -41,7 +41,24 @@ stmt :
   | WHILE expr DO stmts END             { WhileStmt ($2, $4) } ;
   | REPEAT stmts UNTIL expr             { RepeatStmt($2, $4) } ;
   | LOOP stmts END                      { LoopStmt ($2) } ;
+  | CASE expr OF case_stmts case_tail   { CaseStmt ($2, $4, $5) };
+
+case_stmts:
+  /* empty */                         { [] }
+  | cases COLON stmts case_stmts_tail { ($1, $3) :: $4 }
  
+case_stmts_tail:
+  /* empty */                         { [] }
+  | VBAR cases COLON stmts case_stmts_tail { ($2, $4) :: $5 }
+
+cases:
+    NUMBER                              { [$1] }
+  | NUMBER COMMA cases                  { $1 :: $3 }
+
+case_tail:
+    END                                 { Skip }
+  | ELSE stmts END                      { $2 }
+
 expr :
     simple                              { $1 }
   | expr RELOP simple                   { Binop ($2, $1, $3) } ;

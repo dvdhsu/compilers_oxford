@@ -26,6 +26,7 @@ and stmt =
   | WhileStmt of expr * stmt
   | RepeatStmt of stmt * expr
   | LoopStmt of stmt
+  | CaseStmt of expr * (int list * stmt) list * stmt
 
 and expr = 
     Number of int 
