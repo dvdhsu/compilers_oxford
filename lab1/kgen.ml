@@ -66,6 +66,22 @@ let rec gen_stmt exit_stack =
         let lab1 = label () and lab2 = label () in
         SEQ [LABEL lab1; gen_stmt (lab2 :: exit_stack) body; JUMP lab1;
              LABEL lab2]
+    | CaseStmt (switch, cases, default) ->
+        (* the list of labels *)
+        let labs = List.map (fun (case) -> label ()) cases and
+           def_lab = label () and exit_lab = label() in
+        (* combined : [([int], label())] *)
+        let combined = List.combine (List.map (fun (x, y) -> x) cases) labs in
+        (* c_with_labels : [[(int_1, label_1) ... (int_s label_1)]] ... *)
+        let c_with_labels = List.map (fun (xs, lab) -> (List.map (fun i -> (i, lab)) xs)) combined in
+        (* c_with_labels : [(int_1, label_1) ... (int_s label_n)] ... *)
+        let table = List.concat c_with_labels in
+        let l_with_s = List.combine (List.map (fun (x, y) -> y) cases) labs in
+        SEQ [gen_expr switch; CASEJUMP (List.length table);
+             SEQ (List.map (fun (i, label) -> CASEARM(i, label)) table);
+             JUMP def_lab;
+             SEQ (List.map (fun (s, l) -> SEQ [LABEL l; gen_stmt exit_stack s; JUMP exit_lab]) l_with_s);
+             LABEL def_lab; gen_stmt exit_stack default; LABEL exit_lab]
 
 (* |translate| -- generate code for the whole program *)
 let translate (Program ss) =
