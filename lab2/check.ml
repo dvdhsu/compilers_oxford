@@ -64,8 +64,12 @@ and expr_type env e =
   match e.e_guts with
       Variable x -> 
         lookup_def x env
-    | Sub (e1, e2) ->
-        failwith "subscripts not implemented"
+    | Sub (v, e) ->
+        let v_type = check_expr env v
+        and e_type = check_expr env e in
+        let v_is_array = is_array v_type in
+          if e_type <> Integer then type_error ();
+          base_type v_type;
     | Number n -> Integer
     | Monop (w, e1) -> 
         let t = check_expr env e1 in
@@ -84,7 +88,7 @@ let rec check_stmt env =
     | Assign (lhs, rhs) ->
         let ta = check_expr env lhs
         and tb = check_expr env rhs in
-        if ta <> tb then sem_error "type mismatch in assignment" []
+        if ta <> tb && (ta = Integer || ta = Boolean) then sem_error "type mismatch in assignment" []
     | Print e ->
         let t = check_expr env e in
         if t <> Integer then sem_error "print needs an integer" []
