@@ -33,3 +33,23 @@ let lookup x (Env e) = IdMap.find x e
 
 (* |init_env| -- empty environment *)
 let init_env = Env IdMap.empty
+
+(* |type_size| -- returns the size of a specific type *)
+let rec type_size =
+  function
+      Integer -> 4
+    | Boolean -> 1
+    | Array (size, t) -> (type_size t) * size
+    | Void -> 0
+
+(* |is_array| -- returns whether the type is an array *)
+let is_array = 
+  function
+      Array (size, t) -> true
+    | _ -> false
+
+(* |base_type| -- returns base type of the array *)
+let base_type = 
+  function
+      Array (_, t) -> t
+    | _ -> raise Exit;

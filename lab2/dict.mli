@@ -24,3 +24,12 @@ val lookup : ident -> environment -> def
 
 (* |init_env| -- initial empty environment *)
 val init_env : environment
+
+(* |type_size| -- returns the size of a specific type *)
+val type_size : ptype -> int
+
+(* |is_array| -- returns whether the type is an array *)
+val is_array : ptype -> bool
+
+(* |base_type| -- returns base type of the array *)
+val base_type : ptype -> ptype
