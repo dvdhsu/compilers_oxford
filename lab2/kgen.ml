@@ -1,8 +1,8 @@
 (* lab2/kgen.ml *)
 
-open Dict 
-open Tree 
-open Keiko 
+open Dict
+open Tree
+open Keiko
 open Print
 
 let optflag = ref false
@@ -68,7 +68,7 @@ let rec gen_stmt =
         SEQ [CONST 0; GLOBAL "Lib.Newline"; PCALL 0]
     | IfStmt (test, thenpt, elsept) ->
         let lab1 = label () and lab2 = label () and lab3 = label () in
-        SEQ [gen_cond lab1 lab2 test; 
+        SEQ [gen_cond lab1 lab2 test;
           LABEL lab1; gen_stmt thenpt; JUMP lab3;
           LABEL lab2; gen_stmt elsept; LABEL lab3]
     | WhileStmt (test, body) ->
@@ -78,12 +78,12 @@ let rec gen_stmt =
 
 let gen_decl (Decl (xs, t)) =
   List.iter (fun x ->
-      let d = get_def x in
-      let s = 4 in
+      let d = get_def x
+      and s = type_size t in
       printf "GLOVAR $ $\n" [fStr d.d_lab; fNum s]) xs
 
 (* |translate| -- generate code for the whole program *)
-let translate (Program (ds, ss)) = 
+let translate (Program (ds, ss)) =
   let code = gen_stmt ss in
   printf "PROC MAIN 0 0 0\n" [];
   Keiko.output (if !optflag then Peepopt.optimise code else code);
