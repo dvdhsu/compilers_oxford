@@ -18,7 +18,8 @@ let rec line_number e =
 let rec gen_expr e =
   match e.e_guts with
       Variable _ | Sub _ ->
-        SEQ [gen_addr e; LOADW]
+        SEQ [gen_addr e;
+             if e.e_type = Boolean then LOADC else LOADW]
     | Number n ->
         CONST n
     | Monop (w, e1) ->
@@ -32,6 +33,9 @@ and gen_addr v =
       Variable x ->
         let d = get_def x in
         SEQ [LINE x.x_line; GLOBAL d.d_lab]
+    | Sub (a, i) ->
+        SEQ [gen_addr a; gen_expr i; CONST (type_size (base_type a.e_type));
+             BINOP Times; BINOP PlusA]
     | _ ->
         failwith "gen_addr"
 
