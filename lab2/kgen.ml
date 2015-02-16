@@ -74,7 +74,10 @@ let rec gen_stmt =
       Skip -> NOP
     | Seq stmts -> SEQ (List.map gen_stmt stmts)
     | Assign (v, e) ->
-        SEQ [LINE (line_number v); gen_expr e; gen_addr v; STOREW]
+        SEQ [LINE (line_number v); gen_expr e; gen_addr v; 
+             match e.e_type with 
+                 Boolean -> STOREC
+               | _ -> STOREW]
     | Print e ->
         SEQ [gen_expr e; CONST 0; GLOBAL "Lib.Print"; PCALL 1]
     | Newline ->
