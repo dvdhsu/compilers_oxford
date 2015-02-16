@@ -34,8 +34,17 @@ and gen_addr v =
         let d = get_def x in
         SEQ [LINE x.x_line; GLOBAL d.d_lab]
     | Sub (a, i) ->
-        SEQ [gen_addr a; gen_expr i; CONST (type_size (base_type a.e_type));
-             BINOP Times; BINOP PlusA]
+        let size = match a.e_type with Array (size, _) -> size
+        and array_type_size = (type_size (base_type a.e_type)) in
+        (* If it's a constant, immediately push on the address, with manual
+         * bound checking. If it's not, do it the ordinary way. *)
+        let address_offset_code = match i.e_guts with
+            Number n -> if n >= size then raise Exit else SEQ [CONST (array_type_size * n)]
+          | _ -> let multiply_code = if array_type_size <> 1 then
+                     SEQ [CONST array_type_size; BINOP Times]
+                   else NOP in
+                 SEQ [gen_expr i; CONST size; BOUND (line_number a); multiply_code] in
+        SEQ [gen_addr a; address_offset_code; BINOP PlusA]
     | _ ->
         failwith "gen_addr"
 

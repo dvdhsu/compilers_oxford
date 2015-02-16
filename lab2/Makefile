@@ -1,7 +1,7 @@
 # lab2/Makefile
 
 ## Add your own test cases to this list
-TEST = gcd array pascal binary
+TEST = gcd array pascal binary array_bound
 
 all: ppc
 
