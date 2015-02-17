@@ -16,7 +16,7 @@ let gen_addr d =
   if d.d_level = 0 then
     GLOBAL d.d_lab
   else
-    failwith "local variables not implemented yet"
+    SEQ [LOCAL d.d_off]
 
 (* |gen_expr| -- generate code for an expression *)
 let rec gen_expr =
@@ -37,8 +37,9 @@ let rec gen_expr =
     | Binop (w, e1, e2) ->
         SEQ [gen_expr e1; gen_expr e2; BINOP w]
     | Call (p, args) ->
-        SEQ [LINE p.x_line;
-          failwith "no procedure call"]
+        SEQ [LINE p.x_line; SEQ (List.map gen_expr (List.rev args));
+             CONST 0; GLOBAL (get_def p).d_lab;
+             PCALLW (List.length args)]
 
 (* |gen_cond| -- generate code for short-circuit condition *)
 let rec gen_cond tlab flab e =
@@ -88,7 +89,7 @@ let rec gen_stmt =
         SEQ [LABEL lab1; gen_cond lab2 lab3 test;
           LABEL lab2; gen_stmt body; JUMP lab1; LABEL lab3]
     | Return e ->
-        failwith "no return statement"
+        SEQ [gen_expr e; RETURNW]
 
 (* |gen_proc| -- generate code for a procedure *)
 let rec gen_proc (Proc (p, formals, Block (vars, procs, body))) =
