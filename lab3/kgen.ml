@@ -1,9 +1,9 @@
 (* lab3/kgen.ml *)
 
-open Tree 
-open Dict 
-open Keiko 
-open Print 
+open Tree
+open Dict
+open Keiko
+open Print
 
 let optflag = ref false
 
@@ -27,7 +27,7 @@ let rec gen_expr =
           match d.d_kind with
               VarDef ->
                 SEQ [LINE x.x_line; gen_addr d; LOADW]
-            | ProcDef nargs -> 
+            | ProcDef nargs ->
                 failwith "no procedure values"
         end
     | Number x ->
@@ -81,7 +81,7 @@ let rec gen_stmt =
         SEQ [CONST 0; GLOBAL "Lib.Newline"; PCALL 0]
     | IfStmt (test, thenpt, elsept) ->
         let lab1 = label () and lab2 = label () and lab3 = label () in
-        SEQ [gen_cond lab1 lab2 test; 
+        SEQ [gen_cond lab1 lab2 test;
           LABEL lab1; gen_stmt thenpt; JUMP lab3;
           LABEL lab2; gen_stmt elsept; LABEL lab3]
     | WhileStmt (test, body) ->
