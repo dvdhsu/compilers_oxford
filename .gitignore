@@ -98,3 +98,4 @@ lab4/tools/ncparse.mli
 lab4/tools/ncparse.output
 lab4/tools/nodexp
 lab4/tran.ml
+*.swp
